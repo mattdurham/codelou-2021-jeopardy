@@ -10,20 +10,32 @@ namespace codelou_2021_jeopardy
     {
         static void Main(string[] args)
         {
+            var keepTrying = true;
             var client = new HttpClient();
-            var clues = client.GetStringAsync("https://jservice.io/api/clues").Result;
-           
-            var allClues = JsonConvert.DeserializeObject<List<Clue>>(clues);
-            Console.WriteLine(clues);
+            while (keepTrying)
+            {
 
-            var longQuestions = allClues.Where(clue => clue.question.Length > 50).ToList();
-            
-            // Converting List<Clues> to a string
-            string serializedQuestions = JsonConvert.SerializeObject(longQuestions);
+                var clues = client.GetStringAsync("https://jservice.io/api/clues").Result;
 
-            var path = System.Environment.CurrentDirectory + "/question.json";
+                var allClues = JsonConvert.DeserializeObject<List<Clue>>(clues);
+                Console.WriteLine(clues);
 
-            System.IO.File.WriteAllText(path , serializedQuestions);
+                var longQuestions = allClues.Where(clue => clue.question.Length > 50).ToList();
+
+                // Converting List<Clues> to a string
+                string serializedQuestions = JsonConvert.SerializeObject(longQuestions);
+
+                string path = System.Environment.CurrentDirectory + "/question.json";
+
+                System.IO.File.WriteAllText(path, serializedQuestions);
+                Console.WriteLine("Would youi like to get another question? (Y/n)");
+                string answer = Console.ReadLine();
+                if (answer != "Y")
+                {
+                    keepTrying = false;
+                }
+
+            }
         }
     }
 
